@@ -38,7 +38,9 @@ public function wpmail_auth_sendmail($user_token, $user, $user_serialized_code) 
 
 			$auth_url = home_url().'/wp-login.php?user_id='.$user->ID.'&wpmailauth_token='.$user_token;
 			$message  = 'Hi'.$user_name.', <br />Your authorization token code is: <strong>'.$user_token.'</strong><br />You can alternatively use the following url to login: <br />'.$auth_url;
-			wp_mail($user_email, 'Your new password and authorization token', $message);
+			$headers = "MIME-Version: 1.0\r\n";
+			$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+			wp_mail($user_email, 'Your new password and authorization token', $message, $headers);
 			/**************************************************************************************************/
 			return true;
 		}
@@ -54,10 +56,11 @@ public function wpmail_auth_sendmail($user_token, $user, $user_serialized_code) 
 			$userdata   = get_userdata($user);
 			$user_name  = $userdata->user_login;
 			$user_email = $userdata->user_email;
-
+			$headers = "MIME-Version: 1.0\r\n";
+			$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 			$auth_url = home_url().'/wp-login.php?user_id='.$user.'&wpmailauth_token='.$user_token;
 			$message  = 'Hi'.$user_name.', <br />Your authorization token code is: <strong>'.$user_token.'</strong><br />You can alternatively use the following url to login: <br />'.$auth_url;
-			wp_mail($user_email, 'Your new password and authorization token', $message);
+			wp_mail($user_email, 'Your new password and authorization token', $message, $headers);
 			/**************************************************************************************************/
 			return true;
 		}
@@ -114,9 +117,9 @@ public function wpmailauth_render_login($id, $user_token, $error = null) {
 			if ($token !== get_user_meta($user_->ID, 'wpmailauth_token', true)) {
 				$error = new WP_Error;
 				$error->add('wpmailauth', __('The pin you entered was invalid.'));
-				if(isset($user_token)){
-					return $this->wpmailauth_render_login($user_->ID, $user_token, $error);
-				}
+				return $this->wpmailauth_render_login($user_->ID, $token, $error);
+			} else {
+				return $user_;
 			}
 		}
 		return $user;

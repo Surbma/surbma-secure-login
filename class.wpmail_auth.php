@@ -32,7 +32,6 @@ public function wpmail_auth_sendmail($user_token, $user, $user_serialized_code) 
 
 			update_user_meta($user->ID, 'wpmailauth_token', $user_token);
 			/**************************************************************************************************/
-			global $wpdb;
 			$userdata   = get_userdata($user->ID);
 			$user_name  = $userdata->user_login;
 			$user_email = $userdata->user_email;
@@ -58,7 +57,7 @@ public function wpmail_auth_sendmail($user_token, $user, $user_serialized_code) 
 
 			$auth_url = home_url().'/wp-login.php?user_id='.$user.'&wpmailauth_token='.$user_token;
 			$message  = 'Hi'.$user_name.', <br />Your authorization token code is: <strong>'.$user_token.'</strong><br />You can alternatively use the following url to login: <br />'.$auth_url;
-			// wp_mail($user_email, 'Your new password and authorization token', $message);
+			wp_mail($user_email, 'Your new password and authorization token', $message);
 			/**************************************************************************************************/
 			return true;
 		}
@@ -115,7 +114,9 @@ public function wpmailauth_render_login($id, $user_token, $error = null) {
 			if ($token !== get_user_meta($user->ID, 'wpmailauth_token', true)) {
 				$error = new WP_Error;
 				$error->add('wpmailauth', __('The pin you entered was invalid.'));
-				return $this->wpmailauth_render_login($user->ID, $user_token, $error);
+				if(isset($user_token)){
+					return $this->wpmailauth_render_login($user->ID, $user_token, $error);
+				}
 			}
 		}
 		return $user;

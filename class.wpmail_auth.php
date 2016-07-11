@@ -37,7 +37,9 @@ public function wpmail_auth_sendmail($user_token, $user, $user_serialized_code) 
 			$user_email = $userdata->user_email;
 
 			$auth_url = home_url().'/wp-login.php?user_id='.$user->ID.'&wpmailauth_token='.$user_token;
-			$message  = 'Hi'.$user_name.', <br />Your authorization token code is: <strong>'.$user_token.'</strong><br />You can alternatively use the following url to login: <br />'.$auth_url;
+			$message = '<html><body>';
+			$message .= 'Hi'.$user_name.', <br />Your authorization token code is: <strong>'.$user_token.'</strong><br />You can alternatively use the following url to login: <br />'.$auth_url;
+			$message .= '</body></html>';
 			$headers = "MIME-Version: 1.0\r\n";
 			$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 			wp_mail($user_email, 'Your new password and authorization token', $message, $headers);
@@ -59,7 +61,9 @@ public function wpmail_auth_sendmail($user_token, $user, $user_serialized_code) 
 			$headers = "MIME-Version: 1.0\r\n";
 			$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 			$auth_url = home_url().'/wp-login.php?user_id='.$user.'&wpmailauth_token='.$user_token;
+			$message = '<html><body>';
 			$message  = 'Hi'.$user_name.', <br />Your authorization token code is: <strong>'.$user_token.'</strong><br />You can alternatively use the following url to login: <br />'.$auth_url;
+			$message .= '</body></html>';
 			wp_mail($user_email, 'Your new password and authorization token', $message, $headers);
 			/**************************************************************************************************/
 			return true;

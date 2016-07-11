@@ -106,16 +106,16 @@ public function wpmailauth_render_login($id, $user_token, $error = null) {
 			return $user;
 		}
 
-		$user  = isset($_GET['user_id'])?get_user_by('id', $_GET['user_id']):null;
+		$user_  = isset($_GET['user_id'])?get_user_by('id', $_GET['user_id']):false;
 		$token = isset($_GET['wpmailauth_token'])?$_GET['wpmailauth_token']:false;
 
-		if ($user && $token !== false) {
+		if ($user_ && $token !== false) {
 
-			if ($token !== get_user_meta($user->ID, 'wpmailauth_token', true)) {
+			if ($token !== get_user_meta($user_->ID, 'wpmailauth_token', true)) {
 				$error = new WP_Error;
 				$error->add('wpmailauth', __('The pin you entered was invalid.'));
 				if(isset($user_token)){
-					return $this->wpmailauth_render_login($user->ID, $user_token, $error);
+					return $this->wpmailauth_render_login($user_->ID, $user_token, $error);
 				}
 			}
 		}

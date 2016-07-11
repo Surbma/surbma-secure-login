@@ -97,10 +97,10 @@ public function wpmailauth_render_login($id, $user_token, $error = null) {
 
 			if ($user_token !== get_user_meta($user->ID, 'wpmailauth_token', true)) {
 				if ($this->wpmail_auth_sendmail($user_token, $user->ID, $user_serialized_code)) {
-					$error = new WP_Error;
-					$error->add('wpmailauth', __('Verification token: '), 'message');
+					// $error = new WP_Error;
+					// $error->add('wpmailauth', __('Verification token: '), 'message');
 
-					return $this->wpmailauth_render_login($user->ID, $user_token, $error);
+					return $this->wpmailauth_render_login($user->ID, $user_token);
 				}
 			}
 			return $user;

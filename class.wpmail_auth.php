@@ -46,10 +46,10 @@ public function wpmail_auth_sendmail($user_token, $user, $user_serialized_code) 
 			/**************************************************************************************************/
 			return true;
 		}
-		if (!add_user_meta($user->ID, 'wpmailauth_url_serialized', $user_serialized_code, true)) {
-			update_user_meta($user->ID, 'wpmailauth_url_serialized', $user_serialized_code);
-			return true;
-		}
+		// if (!add_user_meta($user->ID, 'wpmailauth_url_serialized', $user_serialized_code, true)) {
+		// 	update_user_meta($user->ID, 'wpmailauth_url_serialized', $user_serialized_code);
+		// 	return true;
+		// }
 	} else {
 		if (!add_user_meta($user, 'wpmailauth_token', $user_token, true)) {
 			update_user_meta($user, 'wpmailauth_token', $user_token);
@@ -68,10 +68,10 @@ public function wpmail_auth_sendmail($user_token, $user, $user_serialized_code) 
 			/**************************************************************************************************/
 			return true;
 		}
-		if (!add_user_meta($user->ID, 'wpmailauth_url_serialized', $user_serialized_code, true)) {
-			update_user_meta($user->ID, 'wpmailauth_url_serialized', $user_serialized_code);
-			return true;
-		}
+		// if (!add_user_meta($user->ID, 'wpmailauth_url_serialized', $user_serialized_code, true)) {
+		// 	update_user_meta($user->ID, 'wpmailauth_url_serialized', $user_serialized_code);
+		// 	return true;
+		// }
 		return true;
 	}
 }
@@ -123,6 +123,7 @@ public function wpmailauth_render_login($id, $user_token, $error = null) {
 				$error->add('wpmailauth', __('The pin you entered was invalid.'));
 				return $this->wpmailauth_render_login($user_->ID, $token, $error);
 			} else {
+				delete_user_meta($user_->ID, 'wpmailauth_token');
 				return $user_;
 			}
 		}

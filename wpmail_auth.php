@@ -8,7 +8,7 @@ Plugin URI: https://www.freelancer.com/u/soamnovum.html
 
 Description: Email Authentication plugin
 
-Version: 1.0.4
+Version: 1.0.5
 
 Author: soamnovum
 

@@ -3,13 +3,11 @@
 if ( !defined( 'ABSPATH' ) ) exit( 'Good try! :)' );
 
 // Class for Initiating the authentication process
-if ( !class_exists( 'Surbma_Secure_Login' ) ):
-
 class Surbma_Secure_Login {
 
 	// Construct Initiate functions
 	public function __construct() {
-		add_filter( 'authenticate', array( $this, 'wpmailauth_authenticate' ), 21 );
+		add_filter( 'authenticate', array( $this, 'wpmailauth_authenticate' ), 30, 3 );
 	}
 
 	/**
@@ -18,56 +16,22 @@ class Surbma_Secure_Login {
 	 *
 	 * @return boolean
 	 */
-	public function wpmail_auth_sendmail( $user_token, $user, $user_serialized_code ) {
-		if ( is_object( $user ) ) {
-			if ( !add_user_meta( $user->ID, 'wpmailauth_token', $user_token, true ) ) {
-				$userdata   = get_userdata( $user->ID );
-				$user_email = $userdata->user_email;
+	public function wpmail_auth_sendmail( $user_token, $user ) {
+		delete_user_meta( $user->ID, 'wpmailauth_token' );
+		add_user_meta( $user->ID, 'wpmailauth_token', $user_token, true );
 
-				update_user_meta( $user->ID, 'wpmailauth_token', $user_token );
+		$userdata   = get_userdata( $user->ID );
+		$user_name  = $userdata->user_login;
+		$user_email = $userdata->user_email;
 
-				$userdata   = get_userdata( $user->ID );
-				$user_name  = $userdata->user_login;
-				$user_email = $userdata->user_email;
+		$auth_url = home_url() . '/wp-login.php?user_id=' . $user->ID . '&wpmailauth_token=' . $user_token;
+		$message = '<html><body>';
+		$message .= 'Hi ' . $user_name . ', <br />Your authorization token code is: <strong>' . $user_token . '</strong><br />You can alternatively use the following url to login: <br />' . $auth_url;
+		$message .= '</body></html>';
+		$headers = "MIME-Version: 1.0\r\n";
+		$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 
-				$auth_url = home_url() . '/wp-login.php?user_id=' . $user->ID . '&wpmailauth_token=' . $user_token;
-				$message = '<html><body>';
-				$message .= 'Hi ' . $user_name . ', <br />Your authorization token code is: <strong>' . $user_token . '</strong><br />You can alternatively use the following url to login: <br />' . $auth_url;
-				$message .= '</body></html>';
-				$headers = "MIME-Version: 1.0\r\n";
-				$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
-				wp_mail( $user_email, 'Your new password and authorization token', $message, $headers );
-
-				return true;
-			}
-			// if (!add_user_meta($user->ID, 'wpmailauth_url_serialized', $user_serialized_code, true)) {
-			// 	update_user_meta($user->ID, 'wpmailauth_url_serialized', $user_serialized_code);
-			// 	return true;
-			// }
-		} else {
-			if ( !add_user_meta( $user, 'wpmailauth_token', $user_token, true ) ) {
-				update_user_meta( $user, 'wpmailauth_token', $user_token );
-
-				global $wpdb;
-				$userdata   = get_userdata( $user );
-				$user_name  = $userdata->user_login;
-				$user_email = $userdata->user_email;
-				$headers = "MIME-Version: 1.0\r\n";
-				$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
-				$auth_url = home_url() . '/wp-login.php?user_id=' . $user . '&wpmailauth_token=' . $user_token;
-				$message = '<html><body>';
-				$message  = 'Hi ' . $user_name . ', <br />Your authorization token code is: <strong>' . $user_token . '</strong><br />You can alternatively use the following url to login: <br />' . $auth_url;
-				$message .= '</body></html>';
-				wp_mail( $user_email, 'Your new password and authorization token', $message, $headers );
-
-				return true;
-			}
-			// if (!add_user_meta($user->ID, 'wpmailauth_url_serialized', $user_serialized_code, true)) {
-			// 	update_user_meta($user->ID, 'wpmailauth_url_serialized', $user_serialized_code);
-			// 	return true;
-			// }
-			return true;
-		}
+		wp_mail( $user_email, 'Your secure token to login', $message, $headers );
 	}
 
 	/**
@@ -92,44 +56,32 @@ class Surbma_Secure_Login {
 	 *
 	 * @return $user
 	 */
-	public function wpmailauth_authenticate($user) {
-
+	public function wpmailauth_authenticate( $user, $username, $password ) {
 		if ( $user instanceof WP_User ) {
 			$user_token = wp_generate_password(6);
-			$user_serialized_code = urlencode( wp_generate_password(15) );
 
-			if ( $user_token !== get_user_meta( $user->ID, 'wpmailauth_token', true ) ) {
-				if ( $this->wpmail_auth_sendmail( $user_token, $user->ID, $user_serialized_code ) ) {
-					// $error = new WP_Error;
-					// $error->add('wpmailauth', __('Verification token: '), 'message');
+			$this->wpmail_auth_sendmail( $user_token, $user );
+			$id = $user->ID;
+			$user = $this->wpmailauth_render_login( $id, $user_token );
+		} else {
+			$userObject = isset( $_GET['user_id'] ) ? get_user_by( 'id', $_GET['user_id'] ) : false;
+			$token = isset( $_GET['wpmailauth_token'] ) ? $_GET['wpmailauth_token'] : false;
 
-					return $this->wpmailauth_render_login( $user->ID, $user_token );
+			if ( $userObject !== false && $token !== false ) {
+				if ( $token !== get_user_meta( $userObject->ID, 'wpmailauth_token', true ) ) {
+					$error = new WP_Error;
+					$error->add( 'wpmailauth', __( 'The pin you entered was invalid.' ) );
+					$id = $userObject->ID;
+					$user = $this->wpmailauth_render_login( $id, $user_token, $error );
+				} else {
+					delete_user_meta( $userObject->ID, 'wpmailauth_token' );
+					$user = $userObject;
 				}
-			}
-			return $user;
-		}
-
-		$user_  = isset( $_GET['user_id']) ? get_user_by( 'id', $_GET['user_id'] ):false;
-		$token = isset( $_GET['wpmailauth_token'] ) ? $_GET['wpmailauth_token']:false;
-
-		if ( $user_ && $token !== false ) {
-
-			if ( $token !== get_user_meta( $user_->ID, 'wpmailauth_token', true ) ) {
-				$error = new WP_Error;
-				$error->add( 'wpmailauth', __( 'The pin you entered was invalid.' ) );
-				return $this->wpmailauth_render_login( $user_->ID, $token, $error );
-			} else {
-				delete_user_meta( $user_->ID, 'wpmailauth_token' );
-				return $user_;
 			}
 		}
 		return $user;
 	}
+
 }
 
-endif;
-
-function load_surbma_secure_login() {
-	return new Surbma_Secure_Login();
-}
-load_surbma_secure_login();
+new Surbma_Secure_Login();

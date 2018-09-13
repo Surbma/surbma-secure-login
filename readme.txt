@@ -4,7 +4,7 @@ Donate link: https://surbma.com/donate/
 Tags: security, login, two factor authentication, surbma
 Requires at least: 4.0
 Tested up to: 4.9
-Stable tag: 2.0
+Stable tag: 3.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,6 +59,10 @@ You can donate me for FREE here: [Surbma.com](https://surbma.com/donate/)
 It is the reverse version of my last name. ;)
 
 == Changelog ==
+
+= 3.0 =
+
+- Code cleanup, optimization and refactoring.
 
 = 2.0 =
 

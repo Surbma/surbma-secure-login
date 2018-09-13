@@ -4,7 +4,7 @@ Plugin Name: Surbma | Secure Login
 Plugin URI: https://surbma.com/wordpress-plugins/
 Description: The most simple two factor authentication plugin for WordPress.
 
-Version: 2.0
+Version: 3.0
 
 Author: Surbma
 Author URI: https://surbma.com/

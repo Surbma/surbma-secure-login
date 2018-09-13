@@ -1,2 +1,4 @@
-# wpmailauth
-2 step authentication via Wordpress
+Surbma | Secure Login
+=====================
+
+The most simple two factor authentication plugin for WordPress.

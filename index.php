@@ -1,1 +1,1 @@
-<?php // WPmail Auth
+<?php // Silence is golden.

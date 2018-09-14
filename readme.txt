@@ -4,13 +4,19 @@ Donate link: https://surbma.com/donate/
 Tags: security, login, two factor authentication, surbma
 Requires at least: 4.0
 Tested up to: 4.9
-Stable tag: 3.0
+Stable tag: 3.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 The most simple two factor authentication plugin for WordPress.
 
 == Description ==
+
+This plugin gives you a very simple way to enable two factor authentication for your WordPress website. There is no options, settings at all, just activate it and it just works! There is no need to install any app on your smartphone, because it is using your email address as the "two factor authentication" process.
+
+When this plugin is activated, every user will get a new email at the login process, which will have a secure token, that needs to be added as a second layer of your secure login. The email will be sent to the user, who wants to log in. This is that easy.
+
+The email is the second factor and you don't need any authenticator app for your phone. Even there is a link in the email, which will bring you right in the admin dashboard.
 
 ### About Surbma
 
@@ -54,11 +60,22 @@ You can donate me for FREE here: [Surbma.com](https://surbma.com/donate/)
 
 == Frequently Asked Questions ==
 
+= Do I need to install any authenticator app, like Google Authenticator on my smartphone? =
+
+No. You don't need any app on your smartphone. The security token will be emailed to your user's email address.
+
 = What does Surbma mean? =
 
 It is the reverse version of my last name. ;)
 
 == Changelog ==
+
+= 3.1 =
+
+- All codes went to one file.
+- Unnecessary files were deleted.
+- Minor code optimisation.
+- Added description.
 
 = 3.0 =
 

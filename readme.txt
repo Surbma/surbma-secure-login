@@ -1,10 +1,11 @@
 === Surbma | Secure Login ===
-Contributors: Surbma
+Contributors: Surbma, CherryPickStudios
 Donate link: https://surbma.com/donate/
 Tags: security, login, two factor authentication, surbma
-Requires at least: 4.0
-Tested up to: 4.9
+Requires at least: 5.0
+Tested up to: 5.8
 Stable tag: 3.1
+Requires PHP: 7.0
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
